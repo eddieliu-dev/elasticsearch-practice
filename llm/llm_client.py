@@ -37,12 +37,12 @@ async def call_llama(filled_prompt) -> str:
     async with aiohttp.ClientSession() as session:
         async with session.post(API_URL, headers=headers, json=payload) as resp:
             resp_json = await resp.json()
-            content = str(resp_json["response"])
+            content = resp_json["response"]
         # print(resp_json)
 
     # print(content)
     # print(type(content))
-    return content
+    return str(content)
 
 # Testing code 测试代码：
 # async def main():

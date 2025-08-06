@@ -20,7 +20,9 @@ def generate_rand_name() -> str:
 
 
 # Generate random timestamps 随机生成时间戳
-def generate_rand_time(start, end) -> str:
+def generate_rand_time(start_year, start_month, start_day, end_year, end_month, end_day) -> str:
+    start = datetime(year=start_year, month=start_month, day=start_day)
+    end = datetime(year=end_year, month=end_month, day=end_day)
     delta = end - start
     rand_second = random.randint(0, int(delta.total_seconds()))
     return str(start + timedelta(seconds=rand_second))
@@ -29,7 +31,7 @@ def generate_rand_time(start, end) -> str:
 # Read text by line for storage 按行读取文本，方便后续储存
 def file_reader(file_name) -> list:
     with open(file_name) as f:
-        records:list[str] = f.read().splitlines()
+        records: list[str] = f.read().splitlines()
         return records
         # print(type(f.read()))
 

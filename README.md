@@ -1,0 +1,1 @@
+This repository is a simple elasticsearch project for practice.

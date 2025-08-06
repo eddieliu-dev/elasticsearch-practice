@@ -8,6 +8,16 @@ def create_or_get_index(index_name) -> str:
     return str(response)
         # print("Index created.")
 
+def create_embedding_index(index_name, mapping) -> str:
+    if not es_client.client.indices.exists(index=index_name):
+        response = es_client.client.indices.create(index=index_name, body=mapping)
+    else:
+        response = es_client.client.indices.get(index=index_name)
+    return response
+
+def reindex_data(reindex_body):
+    es_client.client.reindex(body=reindex_body)
+
 def delete_index(index_name, doc_id):
     es_client.client.delete(index=index_name, id=doc_id)
 
@@ -33,21 +43,25 @@ def query_document(index_name, field, keyword) -> str:
     for hit in response["hits"]["hits"]:
         return str(hit)
 
+def semantic_search(index_name, query_body) -> str:
+    response = es_client.client.search(index=index_name, body=query_body)
+    return str(response)
 
-def main():
-    index = "book"
-    doc_id = "1"
-    doc = {
-        "title": "Elasticsearch 简明教程",
-        "author": "eddieliu-dev",
-        "year": 2025
-    }
-    # print(create_or_get_index("book"))
-    # # print(type(create_or_get_index("book")))
-    # add_document(index_name=index, doc_id=doc_id, doc_name=doc)
-    # print(get_document(index_name=index, doc_id=doc_id))
-    # print(type(get_document(index_name=index, doc_id=doc_id)))
-    print(query_document(index_name=index, field="year", keyword=2025))
-
-if __name__ == "__main__":
-    main()
+# Testing purposes:
+# def main():
+#     index = "book"
+#     doc_id = "1"
+#     doc = {
+#         "title": "Elasticsearch 简明教程",
+#         "author": "eddieliu-dev",
+#         "year": 2025
+#     }
+#     # print(create_or_get_index("book"))
+#     # # print(type(create_or_get_index("book")))
+#     # add_document(index_name=index, doc_id=doc_id, doc_name=doc)
+#     # print(get_document(index_name=index, doc_id=doc_id))
+#     # print(type(get_document(index_name=index, doc_id=doc_id)))
+#     print(query_document(index_name=index, field="year", keyword=2025))
+#
+# if __name__ == "__main__":
+#     main()

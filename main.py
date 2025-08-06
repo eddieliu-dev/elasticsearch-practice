@@ -38,7 +38,40 @@ def main():
             es_function.add_document(index_name= index_name, doc_id=doc_id, doc_name=doc)
 
     else:
-        print("Query")
+        # print("Query")
+
+        embedding_index = "semantic_embedding"
+        embedding_mapping = {
+            "mappings": {
+                "properties":{
+                    "content": {
+                        "type": "semantic_text"
+                    }
+                }
+            }
+        }
+        es_function.create_embedding_index(index_name=embedding_index, mapping=embedding_mapping)
+
+        reindex_mapping = {
+            "source":{
+                "index": index_name,
+                "size": 10
+            },
+            "dest":{
+                "index": embedding_index
+            }
+        }
+        es_function.reindex_data(reindex_body=reindex_mapping)
+
+        query_body = {
+            "query": {
+                "semantic": {
+                    "field": "content",
+                    "query": "美国有什么新闻？"
+                }
+            }
+        }
+        print(es_function.semantic_search(index_name=embedding_index, query_body=query_body))
 
 
 if __name__ == "__main__":

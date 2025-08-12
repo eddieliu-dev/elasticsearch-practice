@@ -8,18 +8,11 @@ def create_or_get_index(index_name) -> str:
     return str(response)
         # print("Index created.")
 
-def create_embedding_index(index_name, mapping) -> str:
-    if not es_client.client.indices.exists(index=index_name):
-        response = es_client.client.indices.create(index=index_name, body=mapping)
+def delete_index(index_name):
+    if es_client.client.indices.exists(index=index_name):
+        es_client.client.indices.delete(index=index_name)
     else:
-        response = es_client.client.indices.get(index=index_name)
-    return response
-
-def reindex_data(reindex_body):
-    es_client.client.reindex(body=reindex_body)
-
-def delete_index(index_name, doc_id):
-    es_client.client.delete(index=index_name, id=doc_id)
+        return
 
 def add_document(index_name, doc_id, doc_name):
     es_client.client.index(index=index_name, id=doc_id, document=doc_name)
@@ -31,21 +24,17 @@ def get_document(index_name, doc_id) -> str:
 def update_document(index_name, doc_id, updated_doc):
     es_client.client.update(index=index_name, id=doc_id, doc=updated_doc)
 
-def query_document(index_name, field, keyword) -> str:
-    query = {
-        "query": {
-            "match": {
-                field: keyword
-            }
-        }
-    }
-    response = es_client.client.search(index=index_name, body=query)
+def delete_document(index_name, doc_id):
+    es_client.client.delete(index=index_name, id=doc_id)
+
+def count_documents(index_name) -> int:
+    count = es_client.client.count(index=index_name)
+    return count
+
+def query_document(index_name, query_body) -> str:
+    response = es_client.client.search(index=index_name, body=query_body)
     for hit in response["hits"]["hits"]:
         return str(hit)
-
-def semantic_search(index_name, query_body) -> str:
-    response = es_client.client.search(index=index_name, body=query_body)
-    return str(response)
 
 # Testing purposes:
 # def main():

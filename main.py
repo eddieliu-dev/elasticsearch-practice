@@ -6,7 +6,6 @@ import asyncio
 
 
 def main():
-
     file = doc_helper.file_reader("data/documents_dup_part_1_part_1_short")
 
     index_name = "news"
@@ -14,13 +13,14 @@ def main():
     command = input("Add or Query?")
 
     if command.casefold() == "add":
+        es_function.delete_index(index_name)
         es_function.create_or_get_index(index_name)
 
         for record in file:
-            filled_title_prompt = llm_client.fill_prompt(prompt.title_prompt, prompt.title_prompt)
+            filled_title_prompt = llm_client.fill_prompt(prompt.title_prompt, record)
             title = asyncio.run(llm_client.call_llama(filled_title_prompt))
 
-            filled_keyword_prompt = llm_client.fill_prompt(prompt.keywords_prompt, prompt.keywords_prompt)
+            filled_keyword_prompt = llm_client.fill_prompt(prompt.keywords_prompt, record)
             keywords = asyncio.run(llm_client.call_llama(filled_keyword_prompt))
 
             doc_id = doc_helper.generate_rand_id()
@@ -30,48 +30,29 @@ def main():
 
             doc = {
                 "title": title,
-                "keywords":keywords,
-                "created_by":created_by,
-                "created_at":created_at
+                "keywords": keywords,
+                "content": record,
+                "created_by": created_by,
+                "created_at": created_at
             }
 
-            es_function.add_document(index_name= index_name, doc_id=doc_id, doc_name=doc)
+            es_function.add_document(index_name=index_name, doc_id=doc_id, doc_name=doc)
 
     else:
         # print("Query")
-
-        embedding_index = "semantic_embedding"
-        embedding_mapping = {
-            "mappings": {
-                "properties":{
-                    "content": {
-                        "type": "semantic_text"
-                    }
-                }
-            }
-        }
-        es_function.create_embedding_index(index_name=embedding_index, mapping=embedding_mapping)
-
-        reindex_mapping = {
-            "source":{
-                "index": index_name,
-                "size": 10
-            },
-            "dest":{
-                "index": embedding_index
-            }
-        }
-        es_function.reindex_data(reindex_body=reindex_mapping)
-
+        # to be done: extract keywords from query using llm and set the keywords as query
+        print(es_function.count_documents(index_name))
         query_body = {
             "query": {
-                "semantic": {
-                    "field": "content",
-                    "query": "美国有什么新闻？"
+                "multi_match": {
+                    "query": "美国",
+                    "fields": ["title","keywords","content"]
+                    # "operator": "and"
+                    # "minimum_should_match": 2
                 }
             }
         }
-        print(es_function.semantic_search(index_name=embedding_index, query_body=query_body))
+        print(es_function.query_document(index_name=index_name, query_body=query_body))
 
 
 if __name__ == "__main__":

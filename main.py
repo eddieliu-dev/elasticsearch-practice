@@ -1,3 +1,18 @@
+# main.py
+#
+# This is the main entry point for the Elasticsearch document management workflow.
+# It can run in two modes based on user input:
+# 1. Add mode:
+#    - Deletes and recreates the specified index
+#    - Reads documents from a file
+#    - Uses an LLM to generate titles and keywords for each document
+#    - Generates metadata (ID, creator, creation date)
+#    - Adds the documents to Elasticsearch
+# 2. Query mode:
+#    - Counts documents in the specified index
+#    - Performs a multi-field full-text search on title, keywords, and content
+# This script integrates functions from helper modules and the LLM client.
+
 from elasticsearch import Elasticsearch
 from es import es_client, es_function
 from helpers import doc_helper, prompt
@@ -45,7 +60,7 @@ def main():
         query_body = {
             "query": {
                 "multi_match": {
-                    "query": "美国",
+                    "query": "美国大火",
                     "fields": ["title","keywords","content"]
                     # "operator": "and"
                     # "minimum_should_match": 2

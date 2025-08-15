@@ -1,3 +1,14 @@
+# es_function.py
+#
+# This file defines helper functions for interacting with Elasticsearch via the `es_client`.
+# It provides operations for:
+# - Creating or retrieving an index
+# - Deleting an index
+# - Adding, retrieving, updating, and deleting documents
+# - Counting documents in an index
+# - Querying documents with a search body
+# These functions encapsulate Elasticsearch API calls for easier reuse across the project.
+
 from . import es_client
 
 def create_or_get_index(index_name) -> str:

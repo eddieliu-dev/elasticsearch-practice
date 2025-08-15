@@ -1,10 +1,13 @@
 # doc_helper.py
 #
-# This file contains helper functions for preparing text and metadata for storage.
-# It includes functions to read text, generate random names, timestamps, UUIDs, and metadata dictionaries.
-#
-# 此文件包含用于准备文本和元数据的辅助函数。
-# 包括读取文本、生成随机姓名、时间戳、UUID 以及元数据字典等功能。
+# This file provides helper functions for generating and processing document-related data.
+# It includes:
+# - Random Chinese name generation
+# - Random timestamp generation within a given date range
+# - Reading text files line-by-line for storage
+# - Generating unique UUIDs
+# - Creating structured metadata dictionaries for documents
+# These utilities support preparing and managing data for Elasticsearch or other storage systems.
 
 import random, uuid
 from datetime import timedelta, datetime
